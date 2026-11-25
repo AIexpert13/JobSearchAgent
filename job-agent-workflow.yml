@@ -1,0 +1,26 @@
+name: Daily job matches
+
+on:
+  schedule:
+    - cron: "30 6 * * *"    # every day 06:30 UTC (07:30 in UK summer time, 06:30 in winter)
+  workflow_dispatch: {}      # lets you run it manually from the Actions tab
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python job_agent.py
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+          TARGET_ROLE: "Director / Chief Architect / Head of AI, Microsoft Azure Data and AI"
+          LOCATION: "UK, remote or hybrid (Bedford, London)"
+          TOP_N: "3"
+          FRESH_DAYS: "3"
